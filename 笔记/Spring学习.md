@@ -112,7 +112,7 @@
     </bean>
 
     <!--    p命名空间，需要引入命名约束,p命名属性注入，也是使用set方法-->
-    <bean id="user5" class="com.mt.pojo.User p:name=" 张三" p:age="18"/>
+    <bean id="user5" class="com.mt.pojo.User" p:name="张三" p:age="18"/>
     <!--    c命名空间，构造器注入-->
     <bean id="user6" class="com.mt.pojo.User" c:name="张三" c:age="18"/>
     <!--    _0和_1指构造器参数位置索引-->
@@ -123,9 +123,9 @@
     <bean id="cat" class="com.mt.pojo.Cat"/>
     <bean id="dog" class="com.mt.pojo.Dog"/>
     <bean id="person" class="com.mt.pojo.Person" autowire="byName">
-    <property name="name" value="张三"/>
-    <property name="cat" ref="cat/>
-        <property name=" dog" ref="dog"/>
+        <property name="name" value="张三"/>
+        <property name="cat" ref="cat"/>
+        <property name="dog" ref="dog"/>
     </bean>
     
     <!--    byname通过名字自动注入属性-->
