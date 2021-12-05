@@ -1,6 +1,7 @@
 #Spring
 
-##创建Bean对象
+##IOC
+####创建Bean对象
 + 1.方式
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -194,3 +195,76 @@ public class People {
     }
 }
 ```
++ 2.注解配置
+```java
+@Configuration
+@ComponentScan(basePackages = "com.mt.pojo")
+public class AppConfig  {
+    // ...
+}
+```
+等同于以下配置文件
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xmlns:context="http://www.springframework.org/schema/context"
+xsi:schemaLocation="http://www.springframework.org/schema/beans
+https://www.springframework.org/schema/beans/spring-beans.xsd
+http://www.springframework.org/schema/context
+https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="com.mt.pojo"/>
+
+</beans>
+```
+然后可以使用@Component创建bean
+```java
+//此User类放在pojo包下被扫描，getBean("user")，实用类的小写名
+//Scope作用域
+@Component
+@Scope("Singleton")
+public class User{
+    private String name1 = "张三";
+    public void setName1(String name1){ this.name1 = name1; }
+    public String getName1(){ return name1; }
+//    属性注入
+    @Value("张三")
+    private String name2 = "张三";
+//    放在set方法上
+    @Value("张三")
+    public void setName2(String name2){ this.name2 = name2; }
+    public String getname2(){ return name2; }
+}
+```
++ @Component 衍生注解：创建bean
+    + Dao : @Repository
+    + Service：@Service
+    + Controller：@Controller
+    
+
++ 3.使用纯Java的@Configuration注解配置文件
+```java
+@Configuration
+public class MtConfig {
+//    通过getBean("myService")获取bean，默认bean名称与方法名相同
+//    通过name指定名称
+    @Bean(name="myservice")
+    public MyService myService() {
+        return new MyServiceImpl();
+    }
+//    起多个别名
+    @Bean(name = {"user1","user2","user3"})
+    public User getUser(){
+        return new User();
+    }
+    
+}
+```
+等同于以下配置文件
+```xml
+<beans>
+    <bean id="myService" class="com.acme.services.MyServiceImpl"/>
+</beans>
+```
+##Aop
