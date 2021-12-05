@@ -127,7 +127,7 @@
     <property name="cat" ref="cat/>
         <property name=" dog" ref="dog"/>
     </bean>
-<!--    byname通过名字自动注入属性-->
+    <!--    byname通过名字自动注入属性-->
     <!--    会通过set方法名后面的值对应bean的id-->
     <!--    比如setCat则再同一个xml文件(上下文)中查找id=cat的bean赋值-->
     <bean id="person" class="com.mt.pojo.Person" autowire="byName">
@@ -149,13 +149,13 @@ import javax.annotation.Resource;
 
 //注解自动装配
 public class People {
-    //    注解注入首先根据类型查找，如果有多个相同类型bean再根据name(属性名)查找
+//    注解注入首先根据类型查找，如果有多个相同类型bean再根据name(属性名)查找
 //    此例中如果查找名字则查找bean的id为cat的bean
 //    Quanlifier指定唯一bean
     @Autowired
     @Qualifier(value = "cat1")
     private Cat cat;
-    //    required标记false则说明dog允许为空
+//    required标记false则说明dog允许为空
 //    @Autowired(required = false)
 //    Resource是java原生注解先根据bytype如果多个再根据byname,也可以指定name
     @Resource(name = "cat1")
@@ -273,7 +273,7 @@ public class User {
 
 @Configuration
 public class MtConfig {
-    //    通过getBean("myService")获取bean，默认bean名称与方法名相同
+//    通过getBean("myService")获取bean，默认bean名称与方法名相同
 //    通过name指定名称
     @Bean(name = "myservice")
     public MyService myService() {
@@ -309,7 +309,7 @@ public class MtConfig {
 
 ```java
 public class Log implements MethodBeforeAdvice {
-    //    method:要执行的方法
+//    method:要执行的方法
 //    args:参数
 //    target:目标对象
     public void before(Method method, Object[] args, Object target) throws Throwable {
