@@ -116,7 +116,7 @@
     <!--    c命名空间，构造器注入-->
     <bean id="user6" class="com.mt.pojo.User" c:name="张三" c:age="18"/>
     <!--    _0和_1指构造器参数位置索引-->
-    <bean id="user6" class="com.mt.pojo.User" c:_0="张三" c:_1age="18"/>
+    <bean id="user6" class="com.mt.pojo.User" c:_0="张三" c:_1="18"/>
 
 
     <!--    测试自动装配-->
@@ -127,18 +127,21 @@
     <property name="cat" ref="cat/>
         <property name=" dog" ref="dog"/>
     </bean>
+    
     <!--    byname通过名字自动注入属性-->
     <!--    会通过set方法名后面的值对应bean的id-->
     <!--    比如setCat则再同一个xml文件(上下文)中查找id=cat的bean赋值-->
     <bean id="person" class="com.mt.pojo.Person" autowire="byName">
         <property name="name" value="张三"/>
     </bean>
+  
     <!--    bytype通过查找和set方法参数相同类型的bean对象-->
     <!--    但是同一个xml文件中(上下文)中只能有一个相对应类型的bean对象-->
     <!--    本例中只能有一个cat和dog-->
     <bean id="person" class="com.mt.pojo.Person" autowire="byType">
         <property name="name" value="张三"/>
     </bean>
+  
 </beans>
 ```
 
