@@ -8,7 +8,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
- https://www.springframework.org/schema/beans/spring-beans.xsd">
+         https://www.springframework.org/schema/beans/spring-beans.xsd">
 <!--    设置注解支持-->
     <context:annotation-config/>
     
@@ -207,14 +207,14 @@ public class AppConfig  {
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-xmlns:context="http://www.springframework.org/schema/context"
-xsi:schemaLocation="http://www.springframework.org/schema/beans
-https://www.springframework.org/schema/beans/spring-beans.xsd
-http://www.springframework.org/schema/context
-https://www.springframework.org/schema/context/spring-context.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
 
-    <context:component-scan base-package="com.mt.pojo"/>
+  <context:component-scan base-package="com.mt.pojo"/>
 
 </beans>
 ```
@@ -268,3 +268,189 @@ public class MtConfig {
 </beans>
 ```
 ##Aop
+本质就是动态代理，Spring会帮我们创建代理类我们只需要控制某个对象方法执行前应该做什么执行后应该做什么
+####实现方式
++ 1.方式
+    + 1.1使用Spring的API接口
+```java
+public class Log implements MethodBeforeAdvice{
+//    method:要执行的方法
+//    args:参数
+//    target:目标对象
+    public void before(Method method,Object[] args,Object target) throws Throwable {
+      System.out.println(target.getClass().getName()+ "的" +method.getName()+ "被执行了");
+    }
+}
+//======================================================================================
+public class AfterLog implements AfterReturningAdvice{ 
+//    returnValue：返回值
+//    method:要执行的方法
+//    args:参数
+//    target:目标对象
+  public void afterReturning(Object returnValue,Method method,Object[] args,Object target) throws Throwable {
+    System.out.println("执行了" +method.getName()+ "方法，返回值：" +returnValue);
+  }
+}
+```
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+<!--    注册bean-->
+  <bean id="userService" class="com.mt.service.UserServiceImpl"/>
+  <bean id="log" class="com.mt.log.Log"/>
+  <bean id="afterLog" class="com.mt.log.AfterLog"/>
+  
+  
+<!--  方式一：使用Spring的API接口-->
+<!--  配置aop切入-->
+  <aop:config>
+<!--    execution(<修饰符模式>?<返回类型模式><方法名模式>(<参数模式>)<异常模式>?)-->
+<!--    切入点:expression:表达式. execution(修饰词， 返回值， 类名， 方法名， 参数)-->
+<!--    下面例子中：-->
+<!--    第一个*代表返回值类型为任意返回值-->
+<!--    第二个*代表类中任意方法-->
+<!--    ..代表方法中任意参数-->
+    <aop:pointcut id="pointcut" expression="execution(* com.mt.service.UserServiceImpl.*(..))"/>
+<!--    执行环绕增加！-->
+<!--    advice-ref引用bean-->
+<!--    pointcut-ref引用切入点-->
+    <aop:advisor advice-ref="log" pointcut-ref="pointcut"/>
+    <aop:advisor advice-ref="afterLog" pointcut-ref="pointcut"/>
+  </aop:config>
+  
+<!--  方式二：使用自定义类-->
+  <bean id="diy" class="com.mt.diy.DiyPointcut"/>
+  
+  <aop:config>
+<!--    自定义切面（切面即我们要把什么切入面对象增加进去）ref是要引用的类-->
+    <aop:aspect ref="diy">
+<!--      切入点-->
+<!--      before和after指定切入点之前之后执行的切入面中的方法-->
+       <aop:pointcut id="point" expression="execution(* com.mt.Service.UserServiceImpl.*(..))"/>
+       <aop:before method="before" pointcut-ref="point"/>
+       <aop:after method="after" pointcut-ref="point"/>
+     </aop:aspect>
+  </aop:config>
+  
+  
+<!--  方式三：使用自定义类注解-->
+  <bean id="annatationPointcut" class="com.mt.diy.AnnotationPointcut"/>
+<!--  开启注解支持-->
+  <aop:aspectj-autoproxy/>
+  
+</beans>
+```
+  + 1.2使用Spring的API接口
+```java
+public class DiyPointcut{
+    public void before(){
+      System.out.println("之前执行了");
+    }
+    public void after(){
+      System.out.println("之后执行了");
+    }
+}
+```
+  + 1.3使用注解实现AOP
+```java
+@Aspect
+public class AnnotationPointcut{
+    
+    @Before("execution(* com.mt.Service.UserServiceImpl.*(..))")
+    public void before(){
+      System.out.println("方法执行前======");
+    }
+    
+    @After("execution(* com.mt.Service.UserServiceImpl.*(..))")
+    public void after(){
+      System.out.println("方法执行后======");
+    }
+    
+//    给定一个参数传入，代表获取处理切入的点
+    @Around("execution(* com.mt.Service.UserServiceImpl.*(..))")
+    public void around(ProceedingJoinPoint jp){
+      System.out.println("环绕前");
+      
+      Object o = jp.proceed();
+
+      System.out.println("环绕后");
+    }
+}
+```
+
+##整合MyBatis
++ 方式一
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+  <!--    注册配置bean-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverMannagerDataSource">
+      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+      <property name="url" value="jdbc:mysql://127.0.0.1:3306/smbms?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false"/>
+      <property name="username" value="root"/>
+      <property name="password" value="root"/>
+    </bean>
+  
+  
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+      <property name="dataSource" ref="dataSource"/>
+      <property name="configLocation" value="classpath:mybatis-config.xml"/>
+      <property name="mapperLocations" value="com/mt/mapper/UserMapper.xml"/>
+    </bean>
+  
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+      <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
+  
+    <bean id="userMapperImpl" class="com.mt.mapper.UserMapperImpl">
+      <property name="sqlSession" ref="sqlSession"/>
+    </bean>
+</beans>
+```
+还需要配合UserMapperImpl
+```java
+public class UserMapperImpl implements UserMapper{
+    
+    private SqlSessionTemplate sqlSession;
+    
+    public void setSqlSession(SqlSessionTemplate sqlSession){
+        this.sqlSession = sqlSession;
+    }
+    public List<User> selectUser(){
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        return userMapper.selectUser();
+    }
+}
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
