@@ -121,7 +121,7 @@
     <bean id="dog" class="com.mt.pojo.Dog"/>
     <bean id="person" class="com.mt.pojo.Person" autowire="byName">
         <property name="name" value="张三"/>
-        <property name="cat" ref="cat"/>
+        <property name="cat" ref="cat/>
         <property name="dog" ref="dog"/>
     </bean>
 <!--    byname通过名字自动注入属性-->
@@ -407,7 +407,7 @@ public class AnnotationPointcut{
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
       <property name="dataSource" ref="dataSource"/>
       <property name="configLocation" value="classpath:mybatis-config.xml"/>
-      <property name="mapperLocations" value="com/mt/mapper/UserMapper.xml"/>
+      <property name="mapperLocations" value="com/mt/mapper/*.xml"/>
     </bean>
   
     <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
@@ -434,7 +434,88 @@ public class UserMapperImpl implements UserMapper{
     }
 }
 ```
++ 方式二
+  + UserMapperImpl继承SqlSessionDaoSupport调用getSession获取sqlSession
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+    <import resource="spring-dao.xml"/>
+  
+    <bean id="userMapperImpl" class="com.mt.mapper.UserMapperImpl">
+      <property name="sqlSessionFactory" ref="sqlSessionFactory"/>
+    </bean>
+  
+</beans>
+```
+```java
+public class UserMapperImpl extends SqlSessionDaoSupport implements UserMapper{
+    public List<User> selectUser(){
+        return getSqlSession().getMapper(UserMapper.class).selectUser();
+    }
+}
+```
 
++ 事务
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+  <!--    注册配置bean-->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverMannagerDataSource">
+      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+      <property name="url" value="jdbc:mysql://127.0.0.1:3306/smbms?useUnicode=true&characterEncoding=utf8&serverTimezone=GMT%2B8&useSSL=false"/>
+      <property name="username" value="root"/>
+      <property name="password" value="root"/>
+    </bean>
+  
+  
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+      <property name="dataSource" ref="dataSource"/>
+      <property name="configLocation" value="classpath:mybatis-config.xml"/>
+      <property name="mapperLocations" value="com/mt/mapper/*.xml"/>
+    </bean>
+  
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+      <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
+<!--    创建事务类支持-->
+    <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+      <constructor-arg ref="dataSource"/>
+    </bean>
+<!--  配合AOP植入事务处理-->
+<!--  配置事务通知-->
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+<!--      给那些方法配置事务-->
+<!--      配置事务传播特性 new propagation:有7种-->
+<!--      add*则为名字为add开头的方法配置-->
+      <tx:attributes>
+        <tx:method name="add*" propagation="REQUIRED"/>
+        <tx:method name="delete"/>
+        <tx:method name="update"/>
+        <tx:method name="query" read-only="true"/>
+        <tx:method name="*"/>
+      </tx:attributes>
+    </tx:advice>
+  
+<!--  配置事务切入-->
+    <aop:config>
+      <aop:poincut id="txPointcut" expression="execution(* com.mt.mapper.*.*(..))"/>
+      <aop:advisor advice-ref="txAdvice" pointcut-ref="txPointcut"/>
+    </aop:config>
+  
+</beans>
+```
 
 
 
