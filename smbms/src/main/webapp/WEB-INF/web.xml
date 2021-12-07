@@ -12,7 +12,14 @@
         <servlet-name>loginDo</servlet-name>
         <url-pattern>/login.do</url-pattern>
     </servlet-mapping>
-
+    <servlet>
+        <servlet-name>loginOut</servlet-name>
+        <servlet-class>com.smbms.servlet.user.LoginOutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>loginOut</servlet-name>
+        <url-pattern>/jsp/logout.do</url-pattern>
+    </servlet-mapping>
 
     <filter>
         <filter-name>encodingFilter</filter-name>

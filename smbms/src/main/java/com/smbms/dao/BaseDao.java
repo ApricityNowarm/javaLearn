@@ -44,7 +44,7 @@ public class BaseDao {
         return updateRow;
     }
 
-    public static boolean Close(Connection co,PreparedStatement pst,ResultSet rs){
+    public static boolean close(Connection co, PreparedStatement pst, ResultSet rs){
         boolean flag = true;
         if(null != rs){
             try {

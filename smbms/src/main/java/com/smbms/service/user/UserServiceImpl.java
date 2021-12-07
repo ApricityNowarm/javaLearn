@@ -42,7 +42,7 @@ public class UserServiceImpl implements UserService{
             }
             throwables.printStackTrace();
         }finally {
-            BaseDao.Close(co,null,null);
+            BaseDao.close(co,null,null);
         }
         return flag;
     }
@@ -57,7 +57,7 @@ public class UserServiceImpl implements UserService{
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }finally {
-            BaseDao.Close(co,null,null);
+            BaseDao.close(co,null,null);
         }
         if(user != null){
             if(psw.equals(user.getUserPassword())){
