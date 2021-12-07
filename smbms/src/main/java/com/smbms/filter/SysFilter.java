@@ -11,7 +11,7 @@ import java.io.IOException;
 public class SysFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        Filter.super.init(filterConfig);
+        System.out.println("SysFilter过滤器初始化！！！");
     }
 
     @Override
@@ -19,7 +19,7 @@ public class SysFilter implements Filter {
                          FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse res = (HttpServletResponse) response;
-        User user = (User) req.getSession(false).getAttribute(FinalParam.USER_SESSION);
+        User user = (User) req.getSession().getAttribute(FinalParam.USER_SESSION);
         if(null == user){
             res.sendRedirect(req.getContextPath() + "/error.jsp");
         }else{
@@ -29,6 +29,6 @@ public class SysFilter implements Filter {
 
     @Override
     public void destroy() {
-        Filter.super.destroy();
+        System.out.println("SysFilter过滤器初销毁！！！");
     }
 }

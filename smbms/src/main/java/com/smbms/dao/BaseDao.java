@@ -27,9 +27,7 @@ public class BaseDao {
         return connection;
     }
 
-    public static ResultSet execute(Connection co, PreparedStatement pst, ResultSet rs,
-                             String sql, Object[] params) throws SQLException {
-        pst = co.prepareStatement(sql);
+    public static ResultSet execute(PreparedStatement pst, ResultSet rs, Object[] params) throws SQLException {
         for (int i = 0; i < params.length; i++) {
             pst.setObject(i+1,params[i]);
         }
@@ -37,10 +35,8 @@ public class BaseDao {
         return rs;
     }
 
-    public static int execute(Connection co, PreparedStatement pst,
-                       String sql,Object[] params) throws SQLException {
+    public static int execute(PreparedStatement pst, Object[] params) throws SQLException {
         int updateRow = -1;
-        pst = co.prepareStatement(sql);
         for (int i = 0; i < params.length; i++) {
             pst.setObject(i+1,i);
         }
@@ -48,7 +44,7 @@ public class BaseDao {
         return updateRow;
     }
 
-    public static Boolean Close(Connection co,PreparedStatement pst,ResultSet rs){
+    public static boolean Close(Connection co,PreparedStatement pst,ResultSet rs){
         boolean flag = true;
         if(null != rs){
             try {
