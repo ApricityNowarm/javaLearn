@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 public interface UserDao {
-    public abstract int add(Connection co,User user) throws SQLException;
+    public abstract int addUser(Connection co, User user) throws SQLException;
     int deleteUser(Connection co,int id) throws SQLException;
     int updateUser(Connection co,User user) throws SQLException;
     int updatePsw(Connection co,int id,String Psw) throws SQLException;

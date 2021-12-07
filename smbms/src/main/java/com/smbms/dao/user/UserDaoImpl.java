@@ -13,7 +13,7 @@ import java.util.List;
 
 public class UserDaoImpl implements UserDao{
     @Override
-    public int add(Connection co, User user) throws SQLException {
+    public int addUser(Connection co, User user) throws SQLException {
         int updateRow = 0;
         PreparedStatement pst = null;
         if(null != co) {
@@ -150,7 +150,7 @@ public class UserDaoImpl implements UserDao{
                 user.setCreationDate(rs.getDate("creationDate"));
                 user.setModifyBy(rs.getInt("modifyBy"));
                 user.setModifyDate(rs.getDate("modifyDate"));
-                user.setRoleName(rs.getString("roleName"));
+                user.setUserRoleName(rs.getString("roleName"));
                 userList.add(user);
             }
         }

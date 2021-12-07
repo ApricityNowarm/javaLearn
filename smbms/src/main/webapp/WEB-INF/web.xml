@@ -20,6 +20,16 @@
         <servlet-name>loginOut</servlet-name>
         <url-pattern>/jsp/logout.do</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>userDo</servlet-name>
+        <servlet-class>com.smbms.servlet.user.UserServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>userDo</servlet-name>
+        <url-pattern>/jsp/user.do</url-pattern>
+    </servlet-mapping>
+
+
 
     <filter>
         <filter-name>encodingFilter</filter-name>

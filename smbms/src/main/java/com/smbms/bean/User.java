@@ -16,7 +16,8 @@ public class User {
     private Date creationDate;  //创建时间
     private int modifyBy;   //修改人id
     private Date modifyDate;    //修改时间
-    private String roleName;    //用户角色名称
+    private String userRoleName;    //用户角色名称
+    private int age;
 
     public User(){
     }
@@ -25,7 +26,7 @@ public class User {
                 String userPassword,int gender,Date birthday,
                 String phone,String address,int userRole,
                 int createdBy,Date creationDate,int modifyBy,
-                Date modifyDate,String roleName) {
+                Date modifyDate,String userRoleName) {
         this.id = id;
         this.userCode = userCode;
         this.userName = userName;
@@ -39,7 +40,7 @@ public class User {
         this.creationDate = creationDate;
         this.modifyBy = modifyBy;
         this.modifyDate = modifyDate;
-        this.roleName =roleName;
+        this.userRoleName = userRoleName;
     }
 
 
@@ -66,6 +67,11 @@ public class User {
         return userName;
     }
 
+
+    public int getAge(){
+        Date date = new Date();
+        return date.getYear() - this.birthday.getYear();
+    }
 
     public void setUserPassword(String userPassword){
         this.userPassword = userPassword;
@@ -147,11 +153,11 @@ public class User {
     }
 
 
-    public  void setRoleName(String roleName){
-        this.roleName = roleName;
+    public  void setUserRoleName(String userRoleName){
+        this.userRoleName = userRoleName;
     }
-    public String getRoleName(){
-        return roleName;
+    public String getUserRoleName(){
+        return userRoleName;
     }
 
 

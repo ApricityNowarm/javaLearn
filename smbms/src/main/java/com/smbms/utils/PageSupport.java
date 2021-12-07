@@ -24,7 +24,9 @@ public class PageSupport {
 
 
     public void setPageCurrentNo(int pageCurrentNo){
-        this.pageCurrentNo = pageCurrentNo;
+        if(pageCurrentNo > 0) {
+            this.pageCurrentNo = pageCurrentNo;
+        }
     }
     public int getPageCurrentNo() {
         return pageCurrentNo;
