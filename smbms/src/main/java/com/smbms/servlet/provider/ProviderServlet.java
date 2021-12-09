@@ -22,21 +22,36 @@ import java.util.List;
 public class ProviderServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        doPost(req,resp);
+        doPost(req, resp);
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String method = req.getParameter("method");
-        switch (method){
-            case "query" : queryPro(req,resp); break;
-            case "delprovider" : delPro(req,resp); break;
-            case "modify" : toModifyPro(req,resp); break;
-            case "view" : toViewPro(req,resp); break;
-            case "modifypro" : modifyPro(req,resp); break;
-            case "add" : addPro(req,resp); break;
-            case "proExist" : proExist(req,resp); break;
-            default : resp.sendRedirect(req.getContextPath() + "/error.jsp");
+        switch (method) {
+            case "query":
+                queryPro(req, resp);
+                break;
+            case "delprovider":
+                delPro(req, resp);
+                break;
+            case "modify":
+                toModifyPro(req, resp);
+                break;
+            case "view":
+                toViewPro(req, resp);
+                break;
+            case "modifypro":
+                modifyPro(req, resp);
+                break;
+            case "add":
+                addPro(req, resp);
+                break;
+            case "proExist":
+                proExist(req, resp);
+                break;
+            default:
+                resp.sendRedirect(req.getContextPath() + "/error.jsp");
         }
     }
 
@@ -44,15 +59,15 @@ public class ProviderServlet extends HttpServlet {
         String proCode = req.getParameter("proCode");
         ProviderService providerService = new ProviderServiceImpl();
         Provider provider = providerService.getProviderByCode(proCode);
-        HashMap<String,String> map = new HashMap<>();
+        HashMap<String, String> map = new HashMap<>();
 
-        if(StringUtils.isNullOrEmpty(proCode)){
-            map.put("proCode","null");
-        }else {
-            if(provider != null){
-                map.put("proCode","exist");
-            }else {
-                map.put("proCode","noExist");
+        if (StringUtils.isNullOrEmpty(proCode)) {
+            map.put("proCode", "null");
+        } else {
+            if (provider != null) {
+                map.put("proCode", "exist");
+            } else {
+                map.put("proCode", "noExist");
             }
         }
         resp.setContentType("application/json");
@@ -63,7 +78,7 @@ public class ProviderServlet extends HttpServlet {
     }
 
     private void addPro(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        int createdBy = ((User)req.getSession().getAttribute(FinalParam.USER_SESSION)).getId();
+        int createdBy = ((User) req.getSession().getAttribute(FinalParam.USER_SESSION)).getId();
         Date creationDate = new Date();
         String proCode = req.getParameter("proCode");
         String proName = req.getParameter("proName");
@@ -86,10 +101,10 @@ public class ProviderServlet extends HttpServlet {
 
         ProviderService providerService = new ProviderServiceImpl();
         boolean flag = providerService.addProvider(provider);
-        if(flag){
-            resp.sendRedirect(req.getContextPath() +"/jsp/provider.do?method=query");
-        }else {
-            req.getRequestDispatcher("providermodify.jsp").forward(req,resp);
+        if (flag) {
+            resp.sendRedirect(req.getContextPath() + "/jsp/provider.do?method=query");
+        } else {
+            req.getRequestDispatcher("providermodify.jsp").forward(req, resp);
         }
 
     }
@@ -120,44 +135,44 @@ public class ProviderServlet extends HttpServlet {
 
         ProviderService providerService = new ProviderServiceImpl();
         boolean flag = providerService.updateProvider(provider);
-        if(flag){
-            resp.sendRedirect(req.getContextPath() +"/jsp/provider.do?method=query");
-        }else {
-            req.getRequestDispatcher("providermodify.jsp").forward(req,resp);
+        if (flag) {
+            resp.sendRedirect(req.getContextPath() + "/jsp/provider.do?method=query");
+        } else {
+            req.getRequestDispatcher("providermodify.jsp").forward(req, resp);
         }
     }
 
     private void toViewPro(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        if(StringUtils.isNullOrEmpty(req.getParameter("proid"))){
-            resp.sendRedirect(req.getContextPath() +"/error.jsp");
-        }else{
+        if (StringUtils.isNullOrEmpty(req.getParameter("proid"))) {
+            resp.sendRedirect(req.getContextPath() + "/error.jsp");
+        } else {
             int proId = Integer.parseInt(req.getParameter("proid"));
             Provider provider = null;
             ProviderService providerService = new ProviderServiceImpl();
             provider = providerService.getProviderByCode(proId);
-            if(provider != null){
-                req.setAttribute("provider",provider);
-                req.getRequestDispatcher("providerview.jsp").forward(req,resp);
-            }else {
-                resp.sendRedirect(req.getContextPath() +"/error.jsp");
+            if (provider != null) {
+                req.setAttribute("provider", provider);
+                req.getRequestDispatcher("providerview.jsp").forward(req, resp);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/error.jsp");
             }
         }
     }
 
     private void toModifyPro(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
-        if(StringUtils.isNullOrEmpty(req.getParameter("proid"))){
+        if (StringUtils.isNullOrEmpty(req.getParameter("proid"))) {
             resp.sendRedirect(req.getContextPath() + "/jsp/providerlist.jsp");
-        }else{
+        } else {
             int proId = -1;
             proId = Integer.parseInt(req.getParameter("proid"));
             ProviderService providerService = new ProviderServiceImpl();
             Provider provider = null;
             provider = providerService.getProviderByCode(proId);
-            if(provider != null){
-                req.setAttribute("provider",provider);
-                req.getRequestDispatcher("providermodify.jsp").forward(req,resp);
-            }else {
-                resp.sendRedirect(req.getContextPath() +"/error.jsp");
+            if (provider != null) {
+                req.setAttribute("provider", provider);
+                req.getRequestDispatcher("providermodify.jsp").forward(req, resp);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/error.jsp");
             }
         }
     }
@@ -170,34 +185,34 @@ public class ProviderServlet extends HttpServlet {
         String queryProCode = req.getParameter("queryProCode");
         String queryProName = req.getParameter("queryProName");
         int pageIndex = 1;
-        if(!StringUtils.isNullOrEmpty(req.getParameter("pageIndex"))){
+        if (!StringUtils.isNullOrEmpty(req.getParameter("pageIndex"))) {
             pageIndex = Integer.parseInt(req.getParameter("pageIndex"));
         }
         ProviderService providerService = new ProviderServiceImpl();
 
         int proCount = 0;
-        proCount = providerService.getProviderCount(queryProCode,queryProName);
+        proCount = providerService.getProviderCount(queryProCode, queryProName);
 
         PageSupport pageSupport = new PageSupport(proCount, FinalParam.PAGE_SIZE);
-        if(pageIndex < 1){
+        if (pageIndex < 1) {
             pageSupport.setPageCurrentNo(1);
-        }else if(pageIndex > pageSupport.getPageCount()){
+        } else if (pageIndex > pageSupport.getPageCount()) {
             pageSupport.setPageCurrentNo(pageSupport.getPageCount());
-        }else {
+        } else {
             pageSupport.setPageCurrentNo(pageIndex);
         }
 
-        List<Provider> providerList = providerService.getProviderList(queryProCode,queryProName,
-                pageSupport.getStartIndex(),pageSupport.getPageSize());
+        List<Provider> providerList = providerService.getProviderList(queryProCode, queryProName,
+                pageSupport.getStartIndex(), pageSupport.getPageSize());
 
-        req.setAttribute("queryProCode",queryProCode);
-        req.setAttribute("queryProName",queryProName);
-        req.setAttribute("providerList",providerList);
-        req.setAttribute("totalPageCount",pageSupport.getPageCount());
-        req.setAttribute("totalCount",pageSupport.getCount());
-        req.setAttribute("currentPageNo",pageSupport.getPageCurrentNo());
+        req.setAttribute("queryProCode", queryProCode);
+        req.setAttribute("queryProName", queryProName);
+        req.setAttribute("providerList", providerList);
+        req.setAttribute("totalPageCount", pageSupport.getPageCount());
+        req.setAttribute("totalCount", pageSupport.getCount());
+        req.setAttribute("currentPageNo", pageSupport.getPageCurrentNo());
 
-        req.getRequestDispatcher("providerlist.jsp").forward(req,resp);
+        req.getRequestDispatcher("providerlist.jsp").forward(req, resp);
     }
 }
 
