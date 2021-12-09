@@ -8,7 +8,7 @@ public class Provider {
     private String proName;
     private String proDesc;
     private String proContact;
-    private String phone;
+    private String proPhone;
     private String proAddress;
     private String proFax;
     private int createdBy;
@@ -19,13 +19,13 @@ public class Provider {
     public Provider() {
     }
 
-    public Provider(int id, String proCode, String proName, String proDesc, String proContact, String phone, String proAddress, String proFax, int createdBy, Date creationDate, Date modifyDate, int modifyBy) {
+    public Provider(int id, String proCode, String proName, String proDesc, String proContact, String proPhone, String proAddress, String proFax, int createdBy, Date creationDate, Date modifyDate, int modifyBy) {
         this.id = id;
         this.proCode = proCode;
         this.proName = proName;
         this.proDesc = proDesc;
         this.proContact = proContact;
-        this.phone = phone;
+        this.proPhone = proPhone;
         this.proAddress = proAddress;
         this.proFax = proFax;
         this.createdBy = createdBy;
@@ -74,12 +74,12 @@ public class Provider {
         this.proContact = proContact;
     }
 
-    public String getPhone() {
-        return phone;
+    public String getProPhone() {
+        return proPhone;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void setProPhone(String proPhone) {
+        this.proPhone = proPhone;
     }
 
     public String getProAddress() {

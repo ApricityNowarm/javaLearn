@@ -113,7 +113,7 @@ public class User {
     }
 
 
-    public void setUserRole(int id){
+    public void setUserRole(int userRole){
         this.userRole = userRole;
     }
     public int getUserRole(){

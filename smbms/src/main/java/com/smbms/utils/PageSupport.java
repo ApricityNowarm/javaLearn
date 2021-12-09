@@ -1,10 +1,11 @@
 package com.smbms.utils;
 
 public class PageSupport {
-    private int pageCount;
+    private int pageCount = 1;
     private int pageCurrentNo = 1;
     private int count;
     private int pageSize;
+    private int startIndex;
 
     public PageSupport(){
     }
@@ -15,6 +16,11 @@ public class PageSupport {
             this.pageSize = pageSize;
             this.calculate();
         }
+    }
+
+    public int getStartIndex() {
+        this.startIndex = (this.pageCurrentNo - 1) * this.pageSize;
+        return startIndex;
     }
 
     public int getPageCount() {

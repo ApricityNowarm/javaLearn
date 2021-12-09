@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class UserDaoImpl implements UserDao{
@@ -36,7 +37,7 @@ public class UserDaoImpl implements UserDao{
         int deleteRow = 0;
         PreparedStatement pst = null;
         if(null != co){
-            String sql = "delete form smbms_user where id =?";
+            String sql = "delete from smbms_user where id =?";
             pst = co.prepareStatement(sql);
             Object[] params = {id};
             deleteRow = BaseDao.execute(pst,params);
@@ -50,13 +51,13 @@ public class UserDaoImpl implements UserDao{
         int updateRow = -1;
         PreparedStatement pst = null;
         if(null != co){
-            String sql = "update smbms_user set userName =?, gender =?" +
+            String sql = "update smbms_user set userName =?, gender =?, " +
                     "birthday =?,phone =?, address =?, " +
-                    "userRole =?, modifyBy =?, modifyDate = ?";
+                    "userRole =?, modifyBy =?, modifyDate = ? where id =?";
             pst = co.prepareStatement(sql);
             Object[] params = {user.getUserName(),user.getGender(),user.getBirthday(),
                                 user.getPhone(),user.getAddress(),user.getUserRole(),
-                                user.getModifyBy(),user.getModifyDate()};
+                                user.getModifyBy(),user.getModifyDate(),user.getId()};
             updateRow = BaseDao.execute(pst,params);
         }
         BaseDao.close(null,pst,null);
@@ -109,8 +110,39 @@ public class UserDaoImpl implements UserDao{
     }
 
     @Override
+    public User getUserByUserId(Connection co, int userId) throws SQLException {
+        User user = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        if(null != co) {
+            String sql = "select * from smbms_user where id =?";
+            pst = co.prepareStatement(sql);
+            Object[] params = {userId};
+            rs = BaseDao.execute(pst, null, params);
+            if (rs.next()) {
+                user = new User();
+                user.setId(rs.getInt("id"));
+                user.setUserCode(rs.getString("userCode"));
+                user.setUserName(rs.getString("userName"));
+                user.setUserPassword(rs.getString("userPassword"));
+                user.setGender(rs.getInt("gender"));
+                user.setBirthday(rs.getDate("birthday"));
+                user.setPhone(rs.getString("phone"));
+                user.setAddress(rs.getString("address"));
+                user.setUserRole(rs.getInt("userRole"));
+                user.setCreatedBy(rs.getInt("createdBy"));
+                user.setCreationDate(rs.getDate("creationDate"));
+                user.setModifyBy(rs.getInt("modifyBy"));
+                user.setModifyDate(rs.getDate("modifyDate"));
+            }
+        }
+        BaseDao.close(null,pst,rs);
+        return user;
+    }
+
+    @Override
     public List<User> getUserList(Connection co, String userName, int roleId,
-                                  int currentPageNo, int pageSize) throws SQLException {
+                                  int startIndex, int pageSize) throws SQLException {
         List<User> userList = new ArrayList<>();
         StringBuffer sql = new StringBuffer();
         PreparedStatement pst = null;
@@ -119,16 +151,15 @@ public class UserDaoImpl implements UserDao{
             sql.append("select u.*,r.roleName from smbms_user u,smbms_role r where u.userRole = r.id");
             List<Object> list = new ArrayList<>();
             if(!StringUtils.isNullOrEmpty(userName)){
-                sql.append(" and u.UserName like %?%");
-                list.add(userName);
+                sql.append(" and u.UserName like ?");
+                list.add("%" +userName+ "%");
             }
             if(roleId > 0 ){
                 sql.append(" and u.userRole =?");
                 list.add(roleId);
             }
             sql.append(" order by u.creationDate DESC limit ?,?");
-            currentPageNo = (currentPageNo-1) * pageSize;
-            list.add(currentPageNo);
+            list.add(startIndex);
             list.add(pageSize);
 
             Object[] params = list.toArray();
@@ -168,8 +199,8 @@ public class UserDaoImpl implements UserDao{
             List<Object> list = new ArrayList<>();
             sql.append("select COUNT(1) as count from smbms_user where 1=1");
             if(!StringUtils.isNullOrEmpty(userName)){
-                sql.append(" and userName =%?%");
-                list.add(userName);
+                sql.append(" and userName like ?");
+                list.add("%" +userName+ "%");
             }
             if(roleID > 0){
                 sql.append(" and userRole =?");

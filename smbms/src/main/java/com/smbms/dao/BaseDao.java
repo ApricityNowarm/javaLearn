@@ -1,6 +1,7 @@
 package com.smbms.dao;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
+import com.mysql.cj.util.StringUtils;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -38,7 +39,7 @@ public class BaseDao {
     public static int execute(PreparedStatement pst, Object[] params) throws SQLException {
         int updateRow = -1;
         for (int i = 0; i < params.length; i++) {
-            pst.setObject(i+1,i);
+            pst.setObject(i+1,params[i]);
         }
         updateRow = pst.executeUpdate();
         return updateRow;

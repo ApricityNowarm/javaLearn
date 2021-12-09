@@ -28,7 +28,14 @@
         <servlet-name>userDo</servlet-name>
         <url-pattern>/jsp/user.do</url-pattern>
     </servlet-mapping>
-
+    <servlet>
+        <servlet-name>providerDo</servlet-name>
+        <servlet-class>com.smbms.servlet.provider.ProviderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>providerDo</servlet-name>
+        <url-pattern>/jsp/provider.do</url-pattern>
+    </servlet-mapping>
 
 
     <filter>
@@ -47,6 +54,10 @@
         <filter-name>sysFilter</filter-name>
         <url-pattern>/jsp/*</url-pattern>
     </filter-mapping>
+
+    <session-config>
+        <session-timeout>30</session-timeout>
+    </session-config>
 
     <welcome-file-list>
         <welcome-file>login.jsp</welcome-file>
