@@ -24,11 +24,24 @@ $(function(){
 	 * jquery的方法传递
 	 */
 	proCode.on("blur",function(){
-		if(proCode.val() != null && proCode.val() != ""){
-			validateTip(proCode.next(),{"color":"green"},imgYes,true);
-		}else{
-			validateTip(proCode.next(),{"color":"red"},imgNo+" 编码不能为空，请重新输入",false);
-		}
+		$.ajax({
+			type:"GET",
+			url:path+ "/jsp/provider.do",
+			data:{method:"proExist",proCode:proCode.val()},
+			dataType:"json",
+			success:function (data) {
+				if(data.proCode == "exist"){
+					validateTip(proCode.next(),{"color":"red"},imgNo+" 编码已存在，请重新输入",false);
+				}else if(data.proCode == "null"){
+					validateTip(proCode.next(),{"color":"red"},imgNo+" 编码不能为空，请重新输入",false);
+				}else {
+					validateTip(proCode.next(),{"color":"green"},imgYes,true);
+				}
+			},
+			error:function (data) {
+				validateTip(userCode.next(),{"color":"red"},imgNo+" 您访问的页面不存在",false);
+			}
+		})
 	}).on("focus",function(){
 		//显示友情提示
 		validateTip(proCode.next(),{"color":"#666666"},"* 请输入供应商编码",false);

@@ -63,6 +63,68 @@ public class ProviderDaoImpl implements ProviderDao{
     }
 
     @Override
+    public Provider getProviderById(Connection co, int proId) throws SQLException {
+        Provider provider = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+
+        if(null != co){
+            String sql = "select * from smbms_provider where id =?";
+            Object[] params = {proId};
+            pst = co.prepareStatement(sql);
+            rs = BaseDao.execute(pst,null,params);
+            if(rs.next()){
+                provider = new Provider();
+                provider.setId(rs.getInt("id"));
+                provider.setProCode(rs.getString("proCode"));
+                provider.setProName(rs.getString("proName"));
+                provider.setProDesc(rs.getString("proDesc"));
+                provider.setProContact(rs.getString("proContact"));
+                provider.setProPhone(rs.getString("proPhone"));
+                provider.setProAddress(rs.getString("proAddress"));
+                provider.setProFax(rs.getString("proFax"));
+                provider.setCreatedBy(rs.getInt("createdBy"));
+                provider.setCreationDate(rs.getDate("creationDate"));
+                provider.setModifyDate(rs.getDate("modifyDate"));
+                provider.setModifyBy(rs.getInt("modifyBy"));
+            }
+        }
+        BaseDao.close(null,pst,rs);
+        return provider;
+    }
+
+    @Override
+    public Provider getProviderByCode(Connection co, String proCode) throws SQLException {
+        Provider provider = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+
+        if(null != co){
+            String sql = "select * from smbms_provider where  proCode =?";
+            Object[] params = {proCode};
+            pst = co.prepareStatement(sql);
+            rs = BaseDao.execute(pst,null,params);
+            if(rs.next()){
+                provider = new Provider();
+                provider.setId(rs.getInt("id"));
+                provider.setProCode(rs.getString("proCode"));
+                provider.setProName(rs.getString("proName"));
+                provider.setProDesc(rs.getString("proDesc"));
+                provider.setProContact(rs.getString("proContact"));
+                provider.setProPhone(rs.getString("proPhone"));
+                provider.setProAddress(rs.getString("proAddress"));
+                provider.setProFax(rs.getString("proFax"));
+                provider.setCreatedBy(rs.getInt("createdBy"));
+                provider.setCreationDate(rs.getDate("creationDate"));
+                provider.setModifyDate(rs.getDate("modifyDate"));
+                provider.setModifyBy(rs.getInt("modifyBy"));
+            }
+        }
+        BaseDao.close(null,pst,rs);
+        return provider;
+    }
+
+    @Override
     public List<Provider> getProviderList(Connection co, String proCode, String proName, int startIndex, int pageSize) throws SQLException {
         List<Provider> proList = new ArrayList<>();
         PreparedStatement pst = null;

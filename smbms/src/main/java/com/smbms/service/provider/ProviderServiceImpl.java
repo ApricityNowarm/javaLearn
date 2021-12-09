@@ -115,6 +115,38 @@ public class ProviderServiceImpl implements ProviderService{
     }
 
     @Override
+    public Provider getProviderByCode(int proId) {
+        Connection co = null;
+        Provider provider = null;
+        try {
+            co = BaseDao.getConnection();
+            provider = providerDao.getProviderById(co,proId);
+        } catch (SQLException throwables) {
+            System.out.println("查询失败===========================");
+            throwables.printStackTrace();
+        }finally {
+            BaseDao.close(co,null,null);
+        }
+        return provider;
+    }
+
+    @Override
+    public Provider getProviderByCode(String proCode) {
+        Connection co = null;
+        Provider provider = null;
+        try {
+            co = BaseDao.getConnection();
+            provider = providerDao.getProviderByCode(co,proCode);
+        } catch (SQLException throwables) {
+            System.out.println("查询失败===========================");
+            throwables.printStackTrace();
+        }finally {
+            BaseDao.close(co,null,null);
+        }
+        return provider;
+    }
+
+    @Override
     public List<Provider> getProviderList(String proCode, String proName, int startIndex, int pageSize) {
         List<Provider> proList = null;
         Connection co = null;

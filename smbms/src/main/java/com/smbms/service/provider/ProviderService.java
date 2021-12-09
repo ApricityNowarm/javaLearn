@@ -8,6 +8,8 @@ public interface ProviderService {
     boolean addProvider(Provider pro);
     boolean delProvider(int proId);
     boolean updateProvider(Provider pro);
+    Provider getProviderByCode(int proId);
+    Provider getProviderByCode(String proCode);
     List<Provider> getProviderList(String proCode, String proName, int startIndex, int pageSize);
     int getProviderCount(String proCode,String proName);
 }
