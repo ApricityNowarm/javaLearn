@@ -14,4 +14,5 @@ public interface ProviderDao {
     Provider getProviderByCode(Connection co,String proCode) throws SQLException;
     List<Provider> getProviderList(Connection co,String proCode,String proName,int startIndex,int pageSize) throws SQLException;
     int getProviderCount(Connection co,String proCode,String proName) throws SQLException;
+    List<Provider> getAllProviderList(Connection co) throws SQLException;
 }

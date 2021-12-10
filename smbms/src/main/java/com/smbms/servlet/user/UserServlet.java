@@ -11,7 +11,6 @@ import com.smbms.service.user.UserServiceImpl;
 import com.smbms.utils.FinalParam;
 import com.smbms.utils.PageSupport;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +37,7 @@ public class UserServlet extends HttpServlet {
 
         switch (method) {
             case "query":
-                userList(req, resp);
+                userListView(req, resp, "userlist.jsp");
                 break;
             case "getrolelist":
                 getRoleList(req, resp);
@@ -47,40 +46,48 @@ public class UserServlet extends HttpServlet {
                 ucExist(req, resp);
                 break;
             case "add":
-                userAdd(req, resp);
+                addUser(req, resp, "/jsp/user.do?method=query", "useradd.jsp");
                 break;
             case "deluser":
                 delUser(req, resp);
                 break;
             case "modify":
-                modifyView(req, resp);
+                toUserModifyView(req, resp, "/jsp/usermodify.jsp");
                 break;
             case "modifyexe":
-                userModifyExe(req, resp);
+                userModifySave(req, resp, "/jsp/user.do?method=query", "usermodify.jsp");
                 break;
             case "pwdmodify":
-                psdModify(req, resp);
+                toPwdModifyView(req, resp);
                 break;
             case "savepwd":
-                savePwd(req, resp);
+                savePwd(req, resp, "pwdmodify.jsp");
                 break;
             case "view":
-                exhibitUser(req, resp);
+                toUserView(req, resp, "userview.jsp");
                 break;
             default:
                 resp.sendRedirect(req.getContextPath() + "/error.jsp");
         }
     }
 
-    private void exhibitUser(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int userId = Integer.parseInt(req.getParameter("uid"));
-        UserService userService = new UserServiceImpl();
-        User user = userService.getUserByuserId(userId);
-        req.setAttribute("user", user);
-        req.getRequestDispatcher("userview.jsp").forward(req, resp);
+    private void toUserView(HttpServletRequest req, HttpServletResponse resp, String url) throws ServletException, IOException {
+        if (StringUtils.isNullOrEmpty(req.getParameter("uid"))) {
+            resp.sendRedirect(req.getContextPath() + "/error.jsp");
+        } else {
+            int userId = Integer.parseInt(req.getParameter("uid"));
+            UserService userService = new UserServiceImpl();
+            User user = userService.getUserByuserId(userId);
+            if (user != null) {
+                req.setAttribute("user", user);
+                req.getRequestDispatcher(url).forward(req, resp);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/error.jsp");
+            }
+        }
     }
 
-    private void savePwd(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void savePwd(HttpServletRequest req, HttpServletResponse resp, String url) throws ServletException, IOException {
         User user = (User) req.getSession().getAttribute(FinalParam.USER_SESSION);
         boolean flag = false;
         String newPassword = req.getParameter("newpassword");
@@ -97,10 +104,10 @@ public class UserServlet extends HttpServlet {
         } else {
             req.setAttribute(FinalParam.Sys_MESSAGE, "密码修改失败！！！");
         }
-        req.getRequestDispatcher("pwdmodify.jsp").forward(req, resp);
+        req.getRequestDispatcher(url).forward(req, resp);
     }
 
-    private void psdModify(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+    private void toPwdModifyView(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String oldPsw = req.getParameter("oldpassword");
         HashMap<String, String> map = new HashMap<>();
 
@@ -126,15 +133,23 @@ public class UserServlet extends HttpServlet {
 
     }
 
-    private void modifyView(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        int userId = Integer.parseInt(req.getParameter("uid"));
-        UserService userService = new UserServiceImpl();
-        User user = userService.getUserByuserId(userId);
-        req.setAttribute("user", user);
-        req.getRequestDispatcher("/jsp/usermodify.jsp").forward(req, resp);
+    private void toUserModifyView(HttpServletRequest req, HttpServletResponse resp, String url) throws ServletException, IOException {
+        if (StringUtils.isNullOrEmpty(req.getParameter("uid"))) {
+            resp.sendRedirect(req.getContextPath() + "/error.jsp");
+        } else {
+            int userId = Integer.parseInt(req.getParameter("uid"));
+            UserService userService = new UserServiceImpl();
+            User user = userService.getUserByuserId(userId);
+            if (user != null) {
+                req.setAttribute("user", user);
+                req.getRequestDispatcher(url).forward(req, resp);
+            } else {
+                resp.sendRedirect(req.getContextPath() + "/error.jsp");
+            }
+        }
     }
 
-    public void userList(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    public void userListView(HttpServletRequest req, HttpServletResponse resp, String url) throws ServletException, IOException {
         String queryName = req.getParameter("queryname");
         String queryRole = req.getParameter("queryUserRole");
         String pageIndex = req.getParameter("pageIndex");
@@ -158,13 +173,7 @@ public class UserServlet extends HttpServlet {
             currentPageNo = Integer.parseInt(pageIndex);
         }
 
-        if (currentPageNo < 1) {
-            pageSupport.setPageCurrentNo(1);
-        } else if (currentPageNo > pageSupport.getPageCount()) {
-            pageSupport.setPageCurrentNo(pageSupport.getPageCount());
-        } else {
-            pageSupport.setPageCurrentNo(currentPageNo);
-        }
+        pageSupport.setPageCurrentNo(currentPageNo);
 
         userList = userService.getUserList(queryName, roleId, pageSupport.getStartIndex(), pageSupport.getPageSize());
         roleList = roleService.getRoleList();
@@ -177,12 +186,12 @@ public class UserServlet extends HttpServlet {
         req.setAttribute("currentPageNo", pageSupport.getPageCurrentNo());
         req.setAttribute("queryUserRole", roleId);
 
-        req.getRequestDispatcher("userlist.jsp").forward(req, resp);
+        req.getRequestDispatcher(url).forward(req, resp);
 
     }
 
 
-    public void userModifyExe(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    public void userModifySave(HttpServletRequest req, HttpServletResponse resp, String url, String failUrl) throws IOException, ServletException {
         int modifyBy = ((User) req.getSession().getAttribute(FinalParam.USER_SESSION)).getId();
         int userId = Integer.parseInt(req.getParameter("uid"));
         String userName = req.getParameter("userName");
@@ -213,9 +222,10 @@ public class UserServlet extends HttpServlet {
         UserService userService = new UserServiceImpl();
         boolean flag = userService.updateUser(user);
         if (flag) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/user.do?method=query");
+            resp.sendRedirect(req.getContextPath() + url);
         } else {
-            req.getRequestDispatcher("usermodify.jsp").forward(req, resp);
+            req.setAttribute("user", user);
+            req.getRequestDispatcher(failUrl).forward(req, resp);
         }
     }
 
@@ -232,15 +242,13 @@ public class UserServlet extends HttpServlet {
 
     public void ucExist(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String userCode = req.getParameter("userCode");
-        boolean flag = false;
         HashMap<String, String> map = new HashMap<>();
 
         UserService userService = new UserServiceImpl();
-        flag = userService.findUserByuserCode(userCode);
 
         resp.setContentType("application/json");
         PrintWriter outPrintWriter = resp.getWriter();
-        if (flag) {
+        if (userService.getUserByuserCode(userCode) != null) {
             map.put("userCode", "exist");
         } else {
             if (userCode.equals(""))
@@ -261,10 +269,8 @@ public class UserServlet extends HttpServlet {
 
         HashMap<String, String> map = new HashMap<>();
 
-        exist = userService.findUserByuserId(userId);
-        if (exist) {
-            flag = userService.delUser(userId);
-            if (flag) {
+        if (userService.getUserByuserId(userId) != null) {
+            if (userService.delUser(userId)) {
                 map.put("delResult", "true");
             } else {
                 map.put("delResult", "false");
@@ -280,7 +286,7 @@ public class UserServlet extends HttpServlet {
     }
 
 
-    public void userAdd(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    public void addUser(HttpServletRequest req, HttpServletResponse resp, String url, String failUrl) throws IOException, ServletException {
         User createByUser = (User) req.getSession().getAttribute(FinalParam.USER_SESSION);
         String userCode = req.getParameter("userCode");
         String userName = req.getParameter("userName");
@@ -313,9 +319,10 @@ public class UserServlet extends HttpServlet {
         UserService userService = new UserServiceImpl();
         boolean flag = userService.addUser(user);
         if (flag) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/user.do?method=query");
+            resp.sendRedirect(req.getContextPath() + url);
         } else {
-            req.getRequestDispatcher("useradd.jsp").forward(req, resp);
+            req.setAttribute("user", user);
+            req.getRequestDispatcher(failUrl).forward(req, resp);
         }
     }
 

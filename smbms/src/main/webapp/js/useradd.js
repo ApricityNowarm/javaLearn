@@ -35,12 +35,17 @@ $(function(){
 		dataType:"json",//ajax接口（请求url）返回的数据类型
 		success:function(data){//data：返回数据（json对象）
 			if(data != null){
+				var rid = $("#rid").val();
 				userRole.html("");
 				var options = "<option value=\"0\">请选择</option>";
 				for(var i = 0; i < data.length; i++){
 					//alert(data[i].id);
 					//alert(data[i].roleName);
-					options += "<option value=\""+data[i].id+"\">"+data[i].roleName+"</option>";
+					if(rid != null && rid != undefined && data[i].id == rid ){
+						options += "<option selected=\"selected\" value=\""+data[i].id+"\" >"+data[i].roleName+"</option>";
+					}else{
+						options += "<option value=\""+data[i].id+"\" >"+data[i].roleName+"</option>";
+					}
 				}
 				userRole.html(options);
 			}
@@ -70,7 +75,6 @@ $(function(){
 					validateTip(userCode.next(),{"color":"red"},imgNo+ " 该用户账号已存在",false);
 				}else if(data.userCode == "null"){//账号空，错误提示
 					validateTip(userCode.next(),{"color":"red"},imgNo+ " 账号不能为空",false);
-					window.console.log(data.userCode);
 				}else {
 					validateTip(userCode.next(),{"color":"green"},imgYes+" 该账号可以使用",true);
 				}

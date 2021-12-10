@@ -35,7 +35,7 @@ public class ProviderDaoImpl implements ProviderDao{
         int delRow = -1;
         PreparedStatement pst = null;
         if(null != co){
-            String sql = "delete * from smbms_provider where id =?";
+            String sql = "delete from smbms_provider where id =?";
             Object[] params = {proId};
             pst = co.prepareStatement(sql);
             delRow = BaseDao.execute(pst,params);
@@ -192,5 +192,36 @@ public class ProviderDaoImpl implements ProviderDao{
         }
         BaseDao.close(null,pst,rs);
         return proCount;
+    }
+
+    @Override
+    public List<Provider> getAllProviderList(Connection co) throws SQLException {
+        List<Provider> proList = new ArrayList<>();
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        if(null != co){
+            String sql = "select * from smbms_provider order by creationDate DESC";
+            pst = co.prepareStatement(sql);
+            Object[] params = {};
+            rs = BaseDao.execute(pst,null,params);
+            while(rs.next()){
+                Provider pro = new Provider();
+                pro.setId(rs.getInt("id"));
+                pro.setProCode(rs.getString("proCode"));
+                pro.setProName(rs.getString("proName"));
+                pro.setProDesc(rs.getString("proDesc"));
+                pro.setProContact(rs.getString("proContact"));
+                pro.setProPhone(rs.getString("proPhone"));
+                pro.setProAddress(rs.getString("proAddress"));
+                pro.setProFax(rs.getString("proFax"));
+                pro.setCreatedBy(rs.getInt("createdBy"));
+                pro.setCreationDate(rs.getDate("creationDate"));
+                pro.setModifyBy(rs.getInt("modifyBy"));
+                pro.setModifyDate(rs.getDate("modifyDate"));
+                proList.add(pro);
+            }
+        }
+        BaseDao.close(null,pst,rs);
+        return proList;
     }
 }

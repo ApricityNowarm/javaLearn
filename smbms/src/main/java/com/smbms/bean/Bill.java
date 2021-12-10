@@ -17,11 +17,12 @@ public class Bill {
     private int modifyBy;
     private Date modifyDate;
     private int providerId;
+    private String providerName;
 
     public Bill() {
     }
 
-    public Bill(int id, String billCode, String productName, String productDesc, String productUnit, BigDecimal productCount, BigDecimal totalPrice, int isPayment, int createdBy, Date creationDate, int modifyBy, Date modifyDate, int providerId) {
+    public Bill(int id, String billCode, String productName, String productDesc, String productUnit, BigDecimal productCount, BigDecimal totalPrice, int isPayment, int createdBy, Date creationDate, int modifyBy, Date modifyDate, int providerId, String providerName) {
         this.id = id;
         this.billCode = billCode;
         this.productName = productName;
@@ -35,6 +36,7 @@ public class Bill {
         this.modifyBy = modifyBy;
         this.modifyDate = modifyDate;
         this.providerId = providerId;
+        this.providerName = providerName;
     }
 
     public int getId() {
@@ -140,4 +142,13 @@ public class Bill {
     public void setProviderId(int providerId) {
         this.providerId = providerId;
     }
+
+    public String getProviderName() {
+        return providerName;
+    }
+
+    public void setProviderName(String providerName) {
+        this.providerName = providerName;
+    }
+
 }

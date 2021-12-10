@@ -115,7 +115,7 @@ public class ProviderServiceImpl implements ProviderService{
     }
 
     @Override
-    public Provider getProviderByCode(int proId) {
+    public Provider getProviderById(int proId) {
         Connection co = null;
         Provider provider = null;
         try {
@@ -153,6 +153,22 @@ public class ProviderServiceImpl implements ProviderService{
         try {
             co = BaseDao.getConnection();
             proList = providerDao.getProviderList(co,proCode,proName, startIndex,pageSize);
+        } catch (SQLException throwables) {
+            System.out.println("查询厂家列表失败===================");
+            throwables.printStackTrace();
+        }finally {
+            BaseDao.close(co,null,null);
+        }
+        return proList;
+    }
+
+    @Override
+    public List<Provider> getAllProviderList() {
+        List<Provider> proList = null;
+        Connection co = null;
+        try {
+            co = BaseDao.getConnection();
+            proList = providerDao.getAllProviderList(co);
         } catch (SQLException throwables) {
             System.out.println("查询厂家列表失败===================");
             throwables.printStackTrace();

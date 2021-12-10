@@ -1,5 +1,6 @@
 ﻿var billCode = null;
 var productName = null;
+var productDesc = null;
 var productUnit = null;
 var productCount = null;
 var totalPrice = null;
@@ -22,6 +23,7 @@ function priceReg (value){
 $(function(){
 	billCode = $("#billCode");
 	productName = $("#productName");
+	productDesc = $("#productDesc");
 	productUnit = $("#productUnit");
 	productCount = $("#productCount");
 	totalPrice = $("#totalPrice");
@@ -31,6 +33,7 @@ $(function(){
 	//初始化的时候，要把所有的提示信息变为：* 以提示必填项，更灵活，不要写在页面上
 	billCode.next().html("*");
 	productName.next().html("*");
+	productDesc.next().html("*");
 	productUnit.next().html("*");
 	productCount.next().html("*");
 	totalPrice.next().html("*");
@@ -43,12 +46,17 @@ $(function(){
 		dataType:"json",//ajax接口（请求url）返回的数据类型
 		success:function(data){//data：返回数据（json对象）
 			if(data != null){
+				var pid = $("#pid").val();
 				$("select").html("");//通过标签选择器，得到select标签，适用于页面里只有一个select
 				var options = "<option value=\"0\">请选择</option>";
 				for(var i = 0; i < data.length; i++){
 					//alert(data[i].id);
 					//alert(data[i].proName);
-					options += "<option value=\""+data[i].id+"\">"+data[i].proName+"</option>";
+					if(pid != null && pid != undefined && data[i].id == pid ){
+						options += "<option selected=\"selected\" value=\""+data[i].id+"\" >"+data[i].proName+"</option>";
+					}else{
+						options += "<option value=\""+data[i].id+"\" >"+data[i].proName+"</option>";
+					}
 				}
 				$("select").html(options);
 			}
@@ -63,11 +71,26 @@ $(function(){
 	 * jquery的方法传递
 	 */
 	billCode.on("blur",function(){
-		if(billCode.val() != null && billCode.val() != ""){
-			validateTip(billCode.next(),{"color":"green"},imgYes,true);
-		}else{
-			validateTip(billCode.next(),{"color":"red"},imgNo+" 编码不能为空，请重新输入",false);
-		}
+
+		$.ajax({
+			type:"GET",
+			url:path+"/jsp/bill.do",
+			data:{method:"billExist",billCode:billCode.val()},
+			dataType:"json",
+			success:function (data) {
+				window.console.log(data);
+				if(data.billCode == "exist"){
+					validateTip(billCode.next(),{"color":"red"},imgNo+ "该订单已存在",false);
+				}else if(data.billCode == "null"){
+					validateTip(billCode.next(),{"color":"red"},imgNo+ "订单号号不能为空",false);
+				}else {
+					validateTip(billCode.next(),{"color":"green"},imgYes+ "订单号号可以使用",true);
+				}
+			},
+			error:function (data) {
+				validateTip(userCode.next(),{"color":"red"},imgNo+" 您访问的页面不存在",false);
+			}
+		});
 	}).on("focus",function(){
 		//显示友情提示
 		validateTip(billCode.next(),{"color":"#666666"},"* 请输入订单编码",false);
@@ -83,7 +106,13 @@ $(function(){
 		}
 		
 	});
-	
+
+	productDesc.on("focus",function () {
+		validateTip(productName.next(),{"color":"#666666"},"* 请输入商品描述",false);
+	}).on("blur",function () {
+		validateTip(productName.next(),{"color":"green"},imgYes,true);
+	});
+
 	productUnit.on("focus",function(){
 		validateTip(productUnit.next(),{"color":"#666666"},"* 请输入商品单位",false);
 	}).on("blur",function(){

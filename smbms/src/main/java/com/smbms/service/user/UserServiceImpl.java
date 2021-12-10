@@ -180,24 +180,6 @@ public class UserServiceImpl implements UserService {
         return userList;
     }
 
-    @Override
-    public boolean findUserByuserCode(String userCode) {
-        Connection co = null;
-        User user = null;
-        boolean flag = false;
-        try {
-            co = BaseDao.getConnection();
-            user = userDao.getUserByUserCode(co,userCode);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }finally {
-            if(user != null){
-                flag = true;
-            }
-            BaseDao.close(co,null,null);
-        }
-        return flag;
-    }
 
     @Override
     public User getUserByuserId(int userId) {
@@ -229,24 +211,6 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    @Override
-    public boolean findUserByuserId(int userId) {
-        Connection co = null;
-        boolean flag = false;
-        User user = null;
-        try {
-            co = BaseDao.getConnection();
-            user = userDao.getUserByUserId(co,userId);
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }finally {
-            if(user != null){
-                flag = true;
-            }
-            BaseDao.close(co,null,null);
-        }
-        return flag;
-    }
 
     @Override
     public int getUserCount(String userName, int roleID) {

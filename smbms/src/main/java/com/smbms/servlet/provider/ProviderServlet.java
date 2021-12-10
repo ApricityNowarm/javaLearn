@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.mysql.cj.util.StringUtils;
 import com.smbms.bean.Provider;
 import com.smbms.bean.User;
+import com.smbms.service.bill.BillService;
+import com.smbms.service.bill.BillServiceImpl;
 import com.smbms.service.provider.ProviderService;
 import com.smbms.service.provider.ProviderServiceImpl;
 import com.smbms.utils.FinalParam;
@@ -30,22 +32,22 @@ public class ProviderServlet extends HttpServlet {
         String method = req.getParameter("method");
         switch (method) {
             case "query":
-                queryPro(req, resp);
+                proListView(req, resp,"providerlist.jsp");
                 break;
             case "delprovider":
                 delPro(req, resp);
                 break;
             case "modify":
-                toModifyPro(req, resp);
+                toProModifyView(req, resp,"providermodify.jsp");
                 break;
             case "view":
-                toViewPro(req, resp);
+                toProView(req, resp,"providerview.jsp");
                 break;
             case "modifypro":
-                modifyPro(req, resp);
+                proModifySave(req, resp,"/jsp/provider.do?method=query","providermodify.jsp");
                 break;
             case "add":
-                addPro(req, resp);
+                addPro(req, resp,"/jsp/provider.do?method=query","provideradd.jsp");
                 break;
             case "proExist":
                 proExist(req, resp);
@@ -58,13 +60,12 @@ public class ProviderServlet extends HttpServlet {
     private void proExist(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         String proCode = req.getParameter("proCode");
         ProviderService providerService = new ProviderServiceImpl();
-        Provider provider = providerService.getProviderByCode(proCode);
         HashMap<String, String> map = new HashMap<>();
 
         if (StringUtils.isNullOrEmpty(proCode)) {
             map.put("proCode", "null");
         } else {
-            if (provider != null) {
+            if (providerService.getProviderByCode(proCode) != null) {
                 map.put("proCode", "exist");
             } else {
                 map.put("proCode", "noExist");
@@ -77,7 +78,7 @@ public class ProviderServlet extends HttpServlet {
         outPrintWriter.close();
     }
 
-    private void addPro(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    private void addPro(HttpServletRequest req, HttpServletResponse resp,String url,String failUrl) throws IOException, ServletException {
         int createdBy = ((User) req.getSession().getAttribute(FinalParam.USER_SESSION)).getId();
         Date creationDate = new Date();
         String proCode = req.getParameter("proCode");
@@ -100,16 +101,16 @@ public class ProviderServlet extends HttpServlet {
         provider.setCreationDate(creationDate);
 
         ProviderService providerService = new ProviderServiceImpl();
-        boolean flag = providerService.addProvider(provider);
-        if (flag) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/provider.do?method=query");
+        if (providerService.addProvider(provider)) {
+            resp.sendRedirect(req.getContextPath() + url);
         } else {
-            req.getRequestDispatcher("providermodify.jsp").forward(req, resp);
+            req.setAttribute("provider",provider);
+            req.getRequestDispatcher(failUrl).forward(req, resp);
         }
 
     }
 
-    private void modifyPro(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    private void proModifySave(HttpServletRequest req, HttpServletResponse resp, String url, String failUrl) throws IOException, ServletException {
         int modifyBy = ((User) req.getSession().getAttribute(FinalParam.USER_SESSION)).getId();
         Date modifyDate = new Date();
         int proId = Integer.parseInt(req.getParameter("proId"));
@@ -136,52 +137,75 @@ public class ProviderServlet extends HttpServlet {
         ProviderService providerService = new ProviderServiceImpl();
         boolean flag = providerService.updateProvider(provider);
         if (flag) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/provider.do?method=query");
+            resp.sendRedirect(req.getContextPath() + url);
         } else {
-            req.getRequestDispatcher("providermodify.jsp").forward(req, resp);
+            req.setAttribute("provider",provider);
+            req.getRequestDispatcher(failUrl).forward(req, resp);
         }
     }
 
-    private void toViewPro(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    private void toProView(HttpServletRequest req, HttpServletResponse resp, String url) throws IOException, ServletException {
         if (StringUtils.isNullOrEmpty(req.getParameter("proid"))) {
             resp.sendRedirect(req.getContextPath() + "/error.jsp");
         } else {
             int proId = Integer.parseInt(req.getParameter("proid"));
-            Provider provider = null;
             ProviderService providerService = new ProviderServiceImpl();
-            provider = providerService.getProviderByCode(proId);
+            Provider provider = providerService.getProviderById(proId);
             if (provider != null) {
                 req.setAttribute("provider", provider);
-                req.getRequestDispatcher("providerview.jsp").forward(req, resp);
+                req.getRequestDispatcher(url).forward(req, resp);
             } else {
                 resp.sendRedirect(req.getContextPath() + "/error.jsp");
             }
         }
     }
 
-    private void toModifyPro(HttpServletRequest req, HttpServletResponse resp) throws IOException, ServletException {
+    private void toProModifyView(HttpServletRequest req, HttpServletResponse resp, String url) throws IOException, ServletException {
         if (StringUtils.isNullOrEmpty(req.getParameter("proid"))) {
-            resp.sendRedirect(req.getContextPath() + "/jsp/providerlist.jsp");
+            resp.sendRedirect(req.getContextPath() + "/error.jsp");
         } else {
             int proId = -1;
             proId = Integer.parseInt(req.getParameter("proid"));
             ProviderService providerService = new ProviderServiceImpl();
             Provider provider = null;
-            provider = providerService.getProviderByCode(proId);
+            provider = providerService.getProviderById(proId);
             if (provider != null) {
                 req.setAttribute("provider", provider);
-                req.getRequestDispatcher("providermodify.jsp").forward(req, resp);
+                req.getRequestDispatcher(url).forward(req, resp);
             } else {
                 resp.sendRedirect(req.getContextPath() + "/error.jsp");
             }
         }
     }
 
-    private void delPro(HttpServletRequest req, HttpServletResponse resp) {
+    private void delPro(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        int proid = Integer.parseInt(req.getParameter("proid"));
+        HashMap<String,Object>map = new HashMap<>();
 
+        BillService billService = new BillServiceImpl();
+        ProviderService providerService = new ProviderServiceImpl();
+
+        int billCount = billService.getBillCount(null,proid,0);
+        System.out.println("订单总数========" + billCount);
+        if(billCount > 0){
+            map.put("delResult",billCount);
+        }else {
+            if(providerService.getProviderById(proid) == null){
+                map.put("delResult","notexist");
+            }else if(providerService.delProvider(proid)){
+                map.put("delResult","true");
+            }else {
+                map.put("delResult","false");
+            }
+        }
+        resp.setContentType("application/json");
+        PrintWriter outPrintWriter = resp.getWriter();
+        outPrintWriter.write(JSON.toJSONString(map));
+        outPrintWriter.flush();
+        outPrintWriter.close();
     }
 
-    private void queryPro(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    private void proListView(HttpServletRequest req, HttpServletResponse resp, String url) throws ServletException, IOException {
         String queryProCode = req.getParameter("queryProCode");
         String queryProName = req.getParameter("queryProName");
         int pageIndex = 1;
@@ -194,13 +218,8 @@ public class ProviderServlet extends HttpServlet {
         proCount = providerService.getProviderCount(queryProCode, queryProName);
 
         PageSupport pageSupport = new PageSupport(proCount, FinalParam.PAGE_SIZE);
-        if (pageIndex < 1) {
-            pageSupport.setPageCurrentNo(1);
-        } else if (pageIndex > pageSupport.getPageCount()) {
-            pageSupport.setPageCurrentNo(pageSupport.getPageCount());
-        } else {
-            pageSupport.setPageCurrentNo(pageIndex);
-        }
+
+        pageSupport.setPageCurrentNo(pageIndex);
 
         List<Provider> providerList = providerService.getProviderList(queryProCode, queryProName,
                 pageSupport.getStartIndex(), pageSupport.getPageSize());
@@ -212,7 +231,7 @@ public class ProviderServlet extends HttpServlet {
         req.setAttribute("totalCount", pageSupport.getCount());
         req.setAttribute("currentPageNo", pageSupport.getPageCurrentNo());
 
-        req.getRequestDispatcher("providerlist.jsp").forward(req, resp);
+        req.getRequestDispatcher(url).forward(req, resp);
     }
 }
 

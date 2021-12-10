@@ -30,7 +30,11 @@ public class PageSupport {
 
 
     public void setPageCurrentNo(int pageCurrentNo){
-        if(pageCurrentNo > 0) {
+        if(pageCurrentNo < 1) {
+            this.pageCurrentNo = 1;
+        }else if(pageCurrentNo > this.pageCount){
+            this.pageCurrentNo = this.pageCount;
+        }else{
             this.pageCurrentNo = pageCurrentNo;
         }
     }

@@ -36,6 +36,14 @@
         <servlet-name>providerDo</servlet-name>
         <url-pattern>/jsp/provider.do</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>billDo</servlet-name>
+        <servlet-class>com.smbms.servlet.bill.BillServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>billDo</servlet-name>
+        <url-pattern>/jsp/bill.do</url-pattern>
+    </servlet-mapping>
 
 
     <filter>

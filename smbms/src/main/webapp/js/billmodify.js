@@ -1,5 +1,6 @@
 ﻿var billCode = null;
 var productName = null;
+var productDesc = null;
 var productUnit = null;
 var productCount = null;
 var totalPrice = null;
@@ -22,6 +23,7 @@ function priceReg (value){
 $(function(){
 	billCode = $("#billCode");
 	productName = $("#productName");
+	productDesc = $("#productDesc");
 	productUnit = $("#productUnit");
 	productCount = $("#productCount");
 	totalPrice = $("#totalPrice");
@@ -80,7 +82,13 @@ $(function(){
 		}
 		
 	});
-	
+
+	productDesc.on("focus",function(){
+		validateTip(productName.next(),{"color":"#666666"},"* 请输入商品描述",false);
+	}).on("blur",function(){
+		validateTip(productName.next(),{"color":"green"},imgYes,true);
+	});
+
 	productUnit.on("focus",function(){
 		validateTip(productUnit.next(),{"color":"#666666"},"* 请输入商品单位",false);
 	}).on("blur",function(){
