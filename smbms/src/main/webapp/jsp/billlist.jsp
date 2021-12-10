@@ -33,7 +33,8 @@
 			
 			 <input	value="查 询" type="submit" id="searchbutton">
 			 <a href="${pageContext.request.contextPath }/jsp/billadd.jsp">添加订单</a>
-		</form>
+		   <input type="hidden" name="pageIndex" value="1"/>
+	   </form>
        </div>
        <!--账单表格 样式和供应商公用-->
       <table class="providerTable" cellpadding="0" cellspacing="0">
@@ -79,6 +80,12 @@
 				</tr>
 			</c:forEach>
       </table>
+	<input type="hidden" id="totalPageCount" value="${totalPageCount}"/>
+	<c:import url="rollpage.jsp">
+		<c:param name="totalCount" value="${totalCount}"/>
+		<c:param name="currentPageNo" value="${currentPageNo}"/>
+		<c:param name="totalPageCount" value="${totalPageCount}"/>
+	</c:import>
   </div>
 </section>
 
