@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cosmo.manager.dao.PunchDateDao">
+
+    <sql id="punchDateAllColumns">
+        select *
+        from punch_date
+    </sql>
+
+    <select id="queryPunchDate" resultType="PunchDate" parameterType="java.util.Map">
+        <include refid="punchDateAllColumns"/>
+        <where>
+            <if test="staff.id != null">
+                id = #{staff.id}
+            </if>
+            <if test="staff.staffCode != null">
+                and staff_code like CONCAT('%',#{staffCode},'%')
+            </if>
+            <if test="year != null">
+                and year(punch_date) like CONCAT('%',#{year},'%')
+            </if>
+            <if test="month != null">
+                and month(punch_date) like CONCAT('%',#{month},'%')
+            </if>
+            <if test="date != null">
+                and date(punch_date) like CONCAT('%',#{date},'%')
+            </if>
+            <if test="staff.onTime != null">
+                and FROM_UNIXTIME(UNIX_TIMESTAMP(on_time),'%H:%i') >= #{staff.onTime}
+            </if>
+            <if test="staff.onState != null">
+                and on_state like CONCAT('%',#{#staff.onState},'%')
+            </if>
+            <if test="staff.offTime != null">
+                and FROM_UNIXTIME(UNIX_TIMESTAMP(on_time),'%H:%i') >= #{staff.offTime}
+            </if>
+            <if test="staff.offState != null">
+                and on_state like CONCAT('%',#{#staff.offState},'%')
+            </if>
+        </where>
+    </select>
+
+
+
+</mapper>

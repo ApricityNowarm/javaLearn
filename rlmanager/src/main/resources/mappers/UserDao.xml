@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cosmo.manager.dao.UserDao">
+
+    <sql id="userAllColumns">
+        select *
+        from user
+    </sql>
+
+    <select id="queryById" resultType="User">
+        <include refid="userAllColumns"/>
+        where id = #{id}
+    </select>
+
+    <select id="queryByUserCode" resultType="User">
+        <include refid="userAllColumns"/>
+        where user_code = #{userCode}
+    </select>
+
+    <select id="queryByStaffCode" resultType="User">
+        <include refid="userAllColumns"/>
+        where staff_code = #{staffCode}
+    </select>
+
+    <select id="queryAllUser" resultType="User">
+        <include refid="userAllColumns"/>
+        <where>
+            <if test="userCode != null">user_code = #{userCode}</if>
+            <if test="staffCode != null">staff_code = #{staffCode}</if>
+        </where>
+    </select>
+
+    <insert id="insertUser" parameterType="User" useGeneratedKeys="true">
+        insert into user (user_code, psw, staff_code)
+        VALUES (#{userCode}, #{psw}, #{staffCode})
+    </insert>
+
+    <delete id="deleteUserById">
+        delete
+        from user
+        where id = #{id}
+    </delete>
+
+    <update id="updateUserById" parameterType="User" useGeneratedKeys="true">
+        update user
+        <set>
+            <if test="userCode != null">user_code = #{userCode},</if>
+            <if test="psw != null">psw = #{psw},</if>
+            <if test="staffCode != null">staff_code = #{staffCode}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+
+</mapper>

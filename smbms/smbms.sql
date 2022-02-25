@@ -192,3 +192,4 @@ INSERT INTO `smbms_user` VALUES (22, 'koko', '空山', '1111111', 1, '2021-12-07
 INSERT INTO `smbms_user` VALUES (23, 'zhouyi', '周易', '1111111', 1, '1996-12-10', '13845679845', '神经病院', 3, 1, '2021-12-08 23:30:43', NULL, NULL);
 
 SET FOREIGN_KEY_CHECKS = 1;
+

@@ -8,10 +8,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="smbms" />
+        <module name="rlmanager" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="ForestBlog" target="1.8" />
+      <module name="test" target="1.7" />
     </bytecodeTargetLevel>
   </component>
 </project>

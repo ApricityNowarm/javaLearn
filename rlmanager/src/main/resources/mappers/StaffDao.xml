@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cosmo.manager.dao.StaffDao">
+
+    <sql id="staffAllColumns">
+        select *
+        from staff
+    </sql>
+
+    <select id="queryById" resultType="Staff">
+        <include refid="staffAllColumns"/>
+        where id = #{id}
+    </select>
+
+    <select id="queryByStaffCode" resultType="Staff">
+        <include refid="staffAllColumns"/>
+        where staff_code = #{staffCode}
+    </select>
+
+    <select id="queryAllStaff" resultType="Staff" parameterType="Staff">
+        <include refid="staffAllColumns"/>
+        <where>
+            <if test="id != null">
+                id like CONCAT('%',#{id},'%')
+            </if>
+            <if test="staffCode != null">
+                and staff_code like CONCAT('%',#{staffCode},'%')
+            </if>
+            <if test="name != null">
+                and name like CONCAT('%',#{name},'%')
+            </if>
+            <if test="gender != null">
+                and gender like CONCAT('%',#{gender},'%')
+            </if>
+            <if test="age != null">
+                and age like CONCAT('%',#{age},'%')
+            </if>
+            <if test="phone != null">
+                and phone like CONCAT('%',#{phone},'%')
+            </if>
+            <if test="dId != null">
+                and d_id like CONCAT('%',#{dId},'%')
+            </if>
+            <if test="pId != null">
+                and p_id like CONCAT('%',#{pId},'%')
+            </if>
+            <if test="kpi != null">
+                and kpi like CONCAT('%',#{kpi},'%')
+            </if>
+        </where>
+    </select>
+
+
+    <insert id="insertStaff" parameterType="Staff" useGeneratedKeys="true">
+        insert into staff (staff_code, name, gender, age, phone, d_id, p_id, kpi)
+        VALUES (#{staffCode}, #{name}, #{gender}, #{age}, #{phone}, #{dId}, #{pId}, #{kpi})
+    </insert>
+
+    <delete id="deleteStaffById">
+        delete
+        from staff
+        where id = #{id}
+    </delete>
+
+    <update id="updateStaffById" useGeneratedKeys="true">
+        update staff
+        <set>
+            <if test="staffCode != null">staff_code = #{staffCode},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="age != null">age = #{age},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="dId != null">d_id = #{dId},</if>
+            <if test="pId != null">p_id = #{pId}</if>
+        </set>
+        where id = #{id}
+    </update>
+
+</mapper>
